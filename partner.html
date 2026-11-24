@@ -1,0 +1,76 @@
+{% extends "base.html" %}{% block content %}
+<h1>Partner Dashboard</h1>
+<div class="stats">
+ <div class="stat"><small>Available Wallet</small><strong>₹{{'%.2f'|format(wallet_balance)}}</strong></div>
+ <div class="stat"><small>Per Successful Service</small><strong>₹{{'%.2f'|format(service_price)}}</strong></div>
+</div>
+
+<section class="panel">
+ <h2>All Paid Services</h2>
+ <p class="muted">किसी भी Service को शुरू करने पर Wallet से ₹1 कटेगा। Balance कम होने पर पहले Recharge करें।</p>
+ {% for group, items in service_catalog %}
+  <h3>{{group}}</h3>
+  <div class="service-grid">
+   {% for item in items %}
+    <div class="service-tile"><b>{{item}}</b><button type="button" onclick="usePaidService({{item|tojson}})">Start · ₹1</button></div>
+   {% endfor %}
+  </div>
+ {% endfor %}
+ <p id="serviceMessage" class="muted" aria-live="polite"></p>
+</section>
+
+<section class="panel">
+ <h2>Wallet Recharge</h2>
+ <p>दो तरीके उपलब्ध हैं: UPI QR से भुगतान करके Request भेजें, या Admin से सीधे Wallet में पैसे जुड़वाएँ।</p>
+ {% if upi_configured %}
+  <div class="recharge-grid">
+   <div>
+    <h3>UPI QR Recharge</h3>
+    <form method="post" action="{{url_for('recharge')}}">
+     <label>Recharge Amount (minimum ₹10)</label><input id="rechargeAmount" type="number" name="amount" min="10" step="1" placeholder="उदा. 100" required>
+     <label>UPI Transaction ID / UTR</label><input name="reference" placeholder="Payment करने के बाद UTR भरें" required>
+     <button type="button" onclick="showRechargeQr()">Show UPI QR</button>
+     <button type="submit">Send Recharge Request</button>
+    </form>
+    <p class="muted">पहले QR scan करके भुगतान करें, फिर UTR भरकर Request भेजें। Admin भुगतान verify करके approve करेगा।</p>
+   </div>
+   <div class="qr-panel"><img id="rechargeQr" alt="UPI payment QR" hidden><p id="qrHint">Amount डालकर Show UPI QR दबाएँ।</p><small>UPI ID: {{upi_id}}</small></div>
+  </div>
+ {% else %}
+  <p class="alert error">UPI QR अभी configure नहीं है। Render Environment में UPI_ID और UPI_NAME सेट करें। तब तक Admin से Wallet Recharge करवा सकते हैं।</p>
+  <form method="post" action="{{url_for('recharge')}}" class="inline">
+   <input type="number" name="amount" min="10" step="1" placeholder="Recharge amount ₹" required>
+   <input name="reference" placeholder="Payment reference / Admin note" required>
+   <button>Send Recharge Request</button>
+  </form>
+ {% endif %}
+ <div class="admin-help"><b>Admin Direct Recharge:</b> Admin Dashboard में Partner के सामने राशि भरकर Add दबाने पर Wallet तुरंत बढ़ेगा।</div>
+</section>
+
+<section class="panel">
+ <h2>Recent Transactions</h2><div class="tablewrap"><table><tr><th>Date</th><th>Type</th><th>Amount</th><th>Details</th></tr>
+ {% for t in transactions %}<tr><td>{{t.created_at}}</td><td>{{t.kind}}</td><td>₹{{'%.2f'|format(t.amount)}}</td><td>{{t.note}}</td></tr>{% else %}<tr><td colspan="4">अभी कोई Transaction नहीं है।</td></tr>{% endfor %}</table></div>
+</section>
+<script>
+async function usePaidService(service){
+ const message=document.getElementById('serviceMessage');
+ if(!confirm(service+' शुरू करने पर Wallet से ₹1 कटेगा। जारी रखें?')) return;
+ message.textContent='Processing...';
+ try{
+  const res=await fetch('/api/use-service',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({service})});
+  const data=await res.json();
+  if(!res.ok||!data.ok){message.textContent=data.message||'Service शुरू नहीं हुई।';return;}
+  message.textContent=service+' के लिए ₹1 कट गया। नया Wallet Balance: ₹'+Number(data.balance).toFixed(2);
+  setTimeout(()=>location.reload(),900);
+ }catch(e){message.textContent='Server से संपर्क नहीं हो पाया।';}
+}
+function showRechargeQr(){
+ const amount=Number(document.getElementById('rechargeAmount').value);
+ if(!amount||amount<10){alert('कम से कम ₹10 राशि भरें।');return;}
+ const img=document.getElementById('rechargeQr');
+ img.src='/upi-qr?amount='+encodeURIComponent(amount)+'&v='+Date.now();
+ img.hidden=false;
+ document.getElementById('qrHint').textContent='अपने UPI App से QR scan करके भुगतान करें।';
+}
+</script>
+{% endblock %}

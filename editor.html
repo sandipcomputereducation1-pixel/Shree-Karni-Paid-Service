@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block content %}<h1>Card Print & Photo Editor</h1><p class="muted">Print action से पहले Wallet से ₹1 कटेगा। Preview और editing मुफ्त है।</p>
+<div class="editor-grid"><section class="panel"><h2>Upload Images</h2><label>Front Card</label><input type="file" id="frontFile" accept="image/*"><label>Back Card</label><input type="file" id="backFile" accept="image/*">
+<label>Rotate: <b id="angleText">0°</b></label><input id="rotate" type="range" min="0" max="360" value="0">
+<label>Zoom / Crop</label><input id="zoom" type="range" min="50" max="200" value="100">
+<div class="actions"><button type="button" onclick="resetEditor()">Reset</button><button type="button" onclick="printPaid()">Pay ₹1 & Print A4</button></div>
+<p class="muted">Auto Fit / Crop mode</p><select id="fitMode"><option value="contain">Auto Fit (पूरी image)</option><option value="cover">Auto Crop (box भरें)</option></select></section>
+<section class="panel"><h2>Print Preview</h2><div class="preview-stack"><div class="card-box"><canvas id="frontCanvas" width="1200" height="800"></canvas><span id="frontEmpty">FRONT CARD</span></div><div class="card-box"><canvas id="backCanvas" width="1200" height="800"></canvas><span id="backEmpty">BACK CARD</span></div></div></section></div>
+<script src="{{url_for('static',filename='editor.js')}}"></script>{% endblock %}
