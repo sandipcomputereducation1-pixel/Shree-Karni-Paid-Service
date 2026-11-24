@@ -50,8 +50,8 @@ if (isPassport) {
 }
 
 if (isSheet) {
-    frontCanvas.width = 1200;
-    frontCanvas.height = 1800;
+    frontCanvas.width = 1800;
+    frontCanvas.height = 1200;
 }
 
 function message(text) {
