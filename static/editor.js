@@ -1,10 +1,10 @@
 
 "use strict";
 
-/* =========================================
-   SHREE KARNI AUTO PRINT
-   COMPLETE EDITOR V2
-========================================= */
+/* =====================================================
+   SHREE KARNI AUTO PRINT V3
+   COMPLETE PHOTO + CARD + PDF EDITOR
+===================================================== */
 
 const $ = id => document.getElementById(id);
 
@@ -28,7 +28,7 @@ const frontCanvas = $("frontCanvas");
 const backCanvas = $("backCanvas");
 
 if (!frontCanvas || !backCanvas) {
-    throw new Error("Preview Canvas नहीं मिला।");
+    throw new Error("Front या Back Canvas HTML में नहीं मिला।");
 }
 
 const frontCtx = frontCanvas.getContext("2d");
@@ -40,11 +40,9 @@ const isSheet = SERVICE === "photo-sheet";
 const isPassport = SERVICE === "passport";
 const isPDF = SERVICE.startsWith("pdf-");
 
-const isImage = !isPDF;
-
-/* =========================================
+/* =====================================================
    MESSAGE
-========================================= */
+===================================================== */
 
 function message(text) {
     const el = $("editorMessage");
@@ -67,24 +65,33 @@ function setHidden(id, hidden) {
     if (el) el.hidden = hidden;
 }
 
-/* =========================================
+/* =====================================================
    CANVAS CONFIGURATION
-========================================= */
+===================================================== */
 
 function configureCanvas() {
+
     if (isPVC) {
         frontCanvas.width = backCanvas.width = 1160;
         frontCanvas.height = backCanvas.height = 638;
-    } else if (isCard) {
+    }
+
+    else if (isCard) {
         frontCanvas.width = backCanvas.width = 1200;
         frontCanvas.height = backCanvas.height = 800;
-    } else if (isPassport) {
+    }
+
+    else if (isPassport) {
         frontCanvas.width = 413;
         frontCanvas.height = 531;
-    } else if (isSheet || SERVICE === "photo") {
+    }
+
+    else if (isSheet || SERVICE === "photo") {
         frontCanvas.width = 1800;
         frontCanvas.height = 1200;
-    } else {
+    }
+
+    else {
         frontCanvas.width = 1200;
         frontCanvas.height = 800;
     }
@@ -92,17 +99,36 @@ function configureCanvas() {
 
 configureCanvas();
 
-/* =========================================
-   DYNAMIC SERVICE CONTROLS
-========================================= */
+/* =====================================================
+   PDF LIBRARY
+===================================================== */
+
+function getPDFLib() {
+
+    if (!window.PDFLib) {
+        throw new Error(
+            "PDF Library Load नहीं हुई। Internet या PDF Script जाँचें।"
+        );
+    }
+
+    return window.PDFLib;
+}
+
+/* =====================================================
+   UI SETUP
+===================================================== */
 
 function createDynamicControls() {
-    const panel = document.querySelector(".editor-grid .panel");
+
+    const panel = document.querySelector(
+        ".editor-grid .panel"
+    );
 
     if (!panel) return;
 
     if (isSheet) {
         const input = $("frontFile");
+
         if (input) {
             input.multiple = true;
             input.accept = "image/*";
@@ -110,6 +136,7 @@ function createDynamicControls() {
     }
 
     if (isPDF) {
+
         const input = $("frontFile");
 
         if (input) {
@@ -118,20 +145,31 @@ function createDynamicControls() {
         }
 
         const controls = document.createElement("div");
+
         controls.id = "pdfDynamicControls";
 
         controls.innerHTML = `
             <hr>
+
             <h3>PDF Settings</h3>
 
             <label>Start Page</label>
-            <input id="startPage" type="number" min="1" value="1">
+            <input id="startPage"
+                   type="number"
+                   min="1"
+                   value="1">
 
             <label>End Page</label>
-            <input id="endPage" type="number" min="1" value="1">
+            <input id="endPage"
+                   type="number"
+                   min="1"
+                   value="1">
 
             <label>Rotate Page Number</label>
-            <input id="pdfPage" type="number" min="1" value="1">
+            <input id="pdfPage"
+                   type="number"
+                   min="1"
+                   value="1">
 
             <p id="pdfInfo">PDF Upload करें।</p>
 
@@ -148,32 +186,35 @@ function createDynamicControls() {
         );
     }
 
-    if (isCard || isPVC) {
-        setHidden("backFile", false);
-        const back = $("backFile");
-        if (back) back.accept = "image/*";
-    } else if (!isPDF) {
+    if (!isCard && !isPVC) {
         setHidden("backFile", true);
     }
 }
 
-/* =========================================
-   IMAGE HELPERS
-========================================= */
+/* =====================================================
+   FILE VALIDATION
+===================================================== */
 
 function validImage(file) {
-    return file && file.type.startsWith("image/");
+    return !!file && file.type.startsWith("image/");
 }
 
 function validPDF(file) {
-    return file && (
+
+    return !!file && (
         file.type === "application/pdf" ||
         file.name.toLowerCase().endsWith(".pdf")
     );
 }
 
+/* =====================================================
+   IMAGE LOADING
+===================================================== */
+
 function loadImage(file) {
+
     return new Promise((resolve, reject) => {
+
         const url = URL.createObjectURL(file);
         const img = new Image();
 
@@ -184,44 +225,71 @@ function loadImage(file) {
 
         img.onerror = () => {
             URL.revokeObjectURL(url);
-            reject(new Error("Image नहीं खुल पाई।"));
+            reject(new Error("Image Load नहीं हुई।"));
         };
 
         img.src = url;
     });
 }
 
-/* =========================================
-   DRAW IMAGE
-========================================= */
+/* =====================================================
+   DRAW SINGLE IMAGE
+===================================================== */
 
 function drawImage(canvas, ctx, img) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.clearRect(
+        0, 0,
+        canvas.width,
+        canvas.height
+    );
 
     ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillRect(
+        0, 0,
+        canvas.width,
+        canvas.height
+    );
 
     if (!img) return;
 
     const rad = angle * Math.PI / 180;
 
-    const rw =
+    const rotatedWidth =
         Math.abs(Math.cos(rad)) * img.width +
         Math.abs(Math.sin(rad)) * img.height;
 
-    const rh =
+    const rotatedHeight =
         Math.abs(Math.sin(rad)) * img.width +
         Math.abs(Math.cos(rad)) * img.height;
 
-    let scale = fitMode === "cover"
-        ? Math.max(canvas.width / rw, canvas.height / rh)
-        : Math.min(canvas.width / rw, canvas.height / rh);
+    let scale;
+
+    if (fitMode === "cover") {
+
+        scale = Math.max(
+            canvas.width / rotatedWidth,
+            canvas.height / rotatedHeight
+        );
+
+    } else {
+
+        scale = Math.min(
+            canvas.width / rotatedWidth,
+            canvas.height / rotatedHeight
+        );
+    }
 
     scale *= zoom;
 
     ctx.save();
 
-    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.translate(
+        canvas.width / 2,
+        canvas.height / 2
+    );
+
     ctx.rotate(rad);
 
     ctx.drawImage(
@@ -235,67 +303,130 @@ function drawImage(canvas, ctx, img) {
     ctx.restore();
 }
 
-/* =========================================
-   PHOTO SHEET
-   4x6 INCH / 8 PHOTOS
-========================================= */
+/* =====================================================
+   PHOTO COVER / CROP
+===================================================== */
 
-function drawCover(ctx, img, x, y, w, h) {
-    const scale = Math.max(w / img.width, h / img.height);
+function drawCover(ctx, img, x, y, width, height) {
 
-    const sw = w / scale;
-    const sh = h / scale;
+    const scale = Math.max(
+        width / img.width,
+        height / img.height
+    );
+
+    const sourceWidth = width / scale;
+    const sourceHeight = height / scale;
+
+    const sx = (img.width - sourceWidth) / 2;
+    const sy = (img.height - sourceHeight) / 2;
 
     ctx.drawImage(
         img,
-        (img.width - sw) / 2,
-        (img.height - sh) / 2,
-        sw,
-        sh,
+        sx,
+        sy,
+        sourceWidth,
+        sourceHeight,
         x,
         y,
-        w,
-        h
+        width,
+        height
     );
 }
 
+/* =====================================================
+   PHOTO SHEET
+   4x6 INCH / 8 PHOTOS
+   1 PHOTO = 8 COPIES
+===================================================== */
+
 function drawPhotoSheet() {
+
+    const canvasWidth = 1800;
+    const canvasHeight = 1200;
+
+    frontCtx.clearRect(
+        0, 0,
+        canvasWidth,
+        canvasHeight
+    );
+
     frontCtx.fillStyle = "#ffffff";
-    frontCtx.fillRect(0, 0, 1800, 1200);
 
-    const w = 413;
-    const h = 531;
-    const gx = 18;
-    const gy = 25;
+    frontCtx.fillRect(
+        0, 0,
+        canvasWidth,
+        canvasHeight
+    );
 
-    const sx = (1800 - (4 * w + 3 * gx)) / 2;
-    const sy = (1200 - (2 * h + gy)) / 2;
+    if (!files.images.length) return;
 
-    files.images.slice(0, 8).forEach((img, i) => {
+    const photoW = 413;
+    const photoH = 531;
+
+    const gapX = 18;
+    const gapY = 25;
+
+    const startX =
+        (canvasWidth - (4 * photoW + 3 * gapX)) / 2;
+
+    const startY =
+        (canvasHeight - (2 * photoH + gapY)) / 2;
+
+    for (let i = 0; i < 8; i++) {
+
+        const img =
+            files.images[i % files.images.length];
+
         const col = i % 4;
         const row = Math.floor(i / 4);
 
-        const x = sx + col * (w + gx);
-        const y = sy + row * (h + gy);
+        const x = startX + col * (photoW + gapX);
+        const y = startY + row * (photoH + gapY);
 
-        drawCover(frontCtx, img, x, y, w, h);
+        drawCover(
+            frontCtx,
+            img,
+            x,
+            y,
+            photoW,
+            photoH
+        );
 
         frontCtx.strokeStyle = "#cccccc";
         frontCtx.lineWidth = 2;
-        frontCtx.strokeRect(x, y, w, h);
-    });
+
+        frontCtx.strokeRect(
+            x,
+            y,
+            photoW,
+            photoH
+        );
+    }
 }
 
-/* =========================================
+/* =====================================================
    LIVE PREVIEW
-========================================= */
+===================================================== */
 
 function drawAll() {
+
     if (isSheet) {
+
         drawPhotoSheet();
+
     } else {
-        drawImage(frontCanvas, frontCtx, files.front);
-        drawImage(backCanvas, backCtx, files.back);
+
+        drawImage(
+            frontCanvas,
+            frontCtx,
+            files.front
+        );
+
+        drawImage(
+            backCanvas,
+            backCtx,
+            files.back
+        );
     }
 
     const frontEmpty = $("frontEmpty");
@@ -308,140 +439,186 @@ function drawAll() {
     }
 
     if (backEmpty) {
-        backEmpty.hidden = !!files.back || !(isCard || isPVC);
+        backEmpty.hidden =
+            !!files.back || !(isCard || isPVC);
     }
 }
 
-/* =========================================
-   UPLOAD FRONT / BACK
-========================================= */
+/* =====================================================
+   FRONT / BACK UPLOAD
+===================================================== */
 
 async function uploadSide(side, file) {
+
     if (!file) return;
 
     if (!validImage(file)) {
-        showError(new Error("कृपया JPG या PNG Image चुनें।"));
-        return;
+        throw new Error("JPG या PNG Image चुनें।");
     }
 
-    try {
-        files[side] = await loadImage(file);
-        drawAll();
+    files[side] = await loadImage(file);
 
-        message(
-            side.toUpperCase() +
-            " Image Upload सफल। Preview तैयार है।"
-        );
-    } catch (error) {
-        showError(error);
-    }
+    drawAll();
+
+    message(
+        side.toUpperCase() +
+        " Image Preview तैयार है।"
+    );
 }
 
-$("frontFile")?.addEventListener("change", async event => {
-    const selected = Array.from(event.target.files || []);
+/* =====================================================
+   MAIN IMAGE UPLOAD
+===================================================== */
 
-    if (!selected.length) return;
+$("frontFile")?.addEventListener(
+    "change",
+    async event => {
 
-    try {
-        if (isPDF) {
-            await uploadPDF(selected);
-            return;
-        }
+        const selected = Array.from(
+            event.target.files || []
+        );
 
-        if (isSheet) {
-            if (selected.length > 8) {
-                throw new Error("अधिकतम 8 फोटो चुनें।");
+        if (!selected.length) return;
+
+        try {
+
+            if (isPDF) {
+
+                await uploadPDF(selected);
+                return;
             }
 
-            const valid = selected.filter(validImage);
+            if (isSheet) {
 
-            if (!valid.length) {
+                if (selected.length > 8) {
+                    throw new Error(
+                        "अधिकतम 8 Photos Upload कर सकते हैं।"
+                    );
+                }
+
+                const valid = selected.filter(validImage);
+
+                if (!valid.length) {
+                    throw new Error("Image File चुनें।");
+                }
+
+                files.images = await Promise.all(
+                    valid.map(loadImage)
+                );
+
+                drawAll();
+
+                message(
+                    files.images.length +
+                    " Photos का Preview तैयार है।"
+                );
+
+                return;
+            }
+
+            const file = selected[0];
+
+            if (!validImage(file)) {
                 throw new Error("सही Image चुनें।");
             }
 
-            files.images = await Promise.all(
-                valid.map(loadImage)
-            );
+            files.front = await loadImage(file);
 
             drawAll();
-            message(files.images.length + " Photos का Preview तैयार है।");
-            return;
+
+            message("Photo Upload सफल। Preview तैयार है।");
+
+        } catch (error) {
+            showError(error);
         }
-
-        if (!validImage(selected[0])) {
-            throw new Error("सही Image File चुनें।");
-        }
-
-        files.front = await loadImage(selected[0]);
-        drawAll();
-        message("Photo Preview तैयार है।");
-
-    } catch (error) {
-        showError(error);
     }
-});
+);
 
-$("backFile")?.addEventListener("change", event => {
-    uploadSide("back", event.target.files[0]);
-});
+/* =====================================================
+   BACK IMAGE UPLOAD
+===================================================== */
 
-/* =========================================
+$("backFile")?.addEventListener(
+    "change",
+    async event => {
+
+        try {
+
+            await uploadSide(
+                "back",
+                event.target.files[0]
+            );
+
+        } catch (error) {
+            showError(error);
+        }
+    }
+);
+
+/* =====================================================
    PDF UPLOAD
-========================================= */
-
-function getPDFLib() {
-    if (!window.PDFLib) {
-        throw new Error("PDF Library Load नहीं हुई।");
-    }
-    return window.PDFLib;
-}
+===================================================== */
 
 async function uploadPDF(selected) {
+
     const valid = selected.filter(validPDF);
 
     if (!valid.length) {
         throw new Error("PDF File चुनें।");
     }
 
-    if (SERVICE === "pdf-merge" && valid.length < 2) {
-        throw new Error("Merge के लिए कम से कम 2 PDF चाहिए।");
+    if (
+        SERVICE === "pdf-merge" &&
+        valid.length < 2
+    ) {
+        throw new Error(
+            "PDF Merge के लिए कम से कम 2 PDF चाहिए।"
+        );
     }
 
     files.pdfFiles = valid;
-    files.pdfBytes = await valid[0].arrayBuffer();
 
-    const pdf = await getPDFLib().PDFDocument.load(
+    files.pdfBytes =
+        await valid[0].arrayBuffer();
+
+    const PDF = getPDFLib();
+
+    const pdf = await PDF.PDFDocument.load(
         files.pdfBytes.slice(0)
     );
 
-    const pages = pdf.getPageCount();
+    const pageCount = pdf.getPageCount();
 
     setValue("startPage", 1);
-    setValue("endPage", pages);
+    setValue("endPage", pageCount);
     setValue("pdfPage", 1);
 
     const info = $("pdfInfo");
 
     if (info) {
         info.textContent =
-            "Pages: " + pages +
-            " | Files: " + valid.length;
+            "Pages: " + pageCount +
+            " | PDF Files: " + valid.length;
     }
 
     message("PDF Upload सफल।");
 }
 
-/* =========================================
+/* =====================================================
    ROTATE / ZOOM / FIT
-========================================= */
+===================================================== */
 
 function updateRotation() {
+
     angle = ((angle % 360) + 360) % 360;
 
     setValue("rotate", angle);
 
     const text = $("angleText");
-    if (text) text.textContent = angle + "°";
+
+    if (text) {
+        text.textContent = angle + "°";
+    }
 
     drawAll();
 }
@@ -456,26 +633,36 @@ function rotateRight() {
     updateRotation();
 }
 
-$("rotate")?.addEventListener("input", event => {
-    angle = Number(event.target.value);
-    updateRotation();
-});
+$("rotate")?.addEventListener(
+    "input",
+    event => {
+        angle = Number(event.target.value);
+        updateRotation();
+    }
+);
 
-$("zoom")?.addEventListener("input", event => {
-    zoom = Number(event.target.value) / 100;
-    drawAll();
-});
+$("zoom")?.addEventListener(
+    "input",
+    event => {
+        zoom = Number(event.target.value) / 100;
+        drawAll();
+    }
+);
 
-$("fitMode")?.addEventListener("change", event => {
-    fitMode = event.target.value;
-    drawAll();
-});
+$("fitMode")?.addEventListener(
+    "change",
+    event => {
+        fitMode = event.target.value;
+        drawAll();
+    }
+);
 
-/* =========================================
-   RESET
-========================================= */
+/* =====================================================
+   RESET EDITOR
+===================================================== */
 
 function resetEditor() {
+
     angle = 0;
     zoom = 1;
     fitMode = "contain";
@@ -485,54 +672,82 @@ function resetEditor() {
     setValue("fitMode", "contain");
 
     const text = $("angleText");
-    if (text) text.textContent = "0°";
+
+    if (text) {
+        text.textContent = "0°";
+    }
 
     drawAll();
+
     message("Editor Reset हो गया।");
 }
 
-/* =========================================
-   CANVAS TO BLOB
-========================================= */
+/* =====================================================
+   CANVAS EXPORT
+===================================================== */
 
 function canvasBlob(canvas) {
+
     return new Promise((resolve, reject) => {
-        canvas.toBlob(blob => {
-            if (blob) resolve(blob);
-            else reject(new Error("Image Export नहीं हुई।"));
-        }, "image/png");
+
+        canvas.toBlob(
+            blob => {
+
+                if (!blob) {
+                    reject(
+                        new Error("Image Export Failed")
+                    );
+                    return;
+                }
+
+                resolve(blob);
+            },
+            "image/png"
+        );
     });
 }
 
-/* =========================================
+/* =====================================================
    DOWNLOAD
-========================================= */
+===================================================== */
 
 async function downloadBlob(blob, filename) {
+
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
 
-    a.href = url;
-    a.download = filename;
+    const link = document.createElement("a");
 
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    link.href = url;
+    link.download = filename;
 
-    setTimeout(() => URL.revokeObjectURL(url), 30000);
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+    setTimeout(
+        () => URL.revokeObjectURL(url),
+        30000
+    );
 }
 
-/* =========================================
-   WALLET BILLING
-========================================= */
+/* =====================================================
+   API REQUEST
+===================================================== */
 
 async function apiJSON(url, data) {
+
     const response = await fetch(url, {
+
         method: "POST",
+
         credentials: "same-origin",
+
         headers: {
             "Content-Type": "application/json"
         },
+
         body: JSON.stringify(data)
     });
 
@@ -541,46 +756,71 @@ async function apiJSON(url, data) {
     try {
         result = await response.json();
     } catch {
-        throw new Error("Server Response नहीं मिला।");
+        throw new Error(
+            "Server से सही Response नहीं मिला।"
+        );
     }
 
     if (!response.ok || !result.ok) {
-        throw new Error(result.message || "Billing Error");
+        throw new Error(
+            result.message || "Server Error"
+        );
     }
 
     return result;
 }
 
+/* =====================================================
+   WALLET BILLING
+===================================================== */
+
 async function paidExport(blob, filename) {
+
     if (busy) return;
 
     if (!SERVICE) {
-        throw new Error("Service ID नहीं मिली।");
+        throw new Error(
+            "Service ID Missing। editor.html जाँचें।"
+        );
     }
 
     busy = true;
 
+    let jobToken = null;
+    let charged = false;
+
     try {
+
         message("Wallet Balance जाँच रहे हैं...");
 
-        const job = await apiJSON("/api/start-job", {
-            service: SERVICE
-        });
+        const job = await apiJSON(
+            "/api/start-job",
+            {
+                service: SERVICE
+            }
+        );
 
-        if (!job.job_token) {
+        jobToken = job.job_token;
+
+        if (!jobToken) {
             throw new Error("Job Token नहीं मिला।");
         }
 
         message("₹1 Billing Process हो रही है...");
 
-        const result = await apiJSON("/api/complete-job", {
-            job_token: job.job_token
-        });
+        const result = await apiJSON(
+            "/api/complete-job",
+            {
+                job_token: jobToken
+            }
+        );
+
+        charged = true;
 
         await downloadBlob(blob, filename);
 
         message(
-            "Export सफल | Charge ₹" +
+            "Export सफल! Charge ₹" +
             Number(result.charged).toFixed(2) +
             " | Balance ₹" +
             Number(result.balance).toFixed(2)
@@ -588,16 +828,44 @@ async function paidExport(blob, filename) {
 
         return result;
 
+    } catch (error) {
+
+        if (jobToken && !charged) {
+
+            try {
+
+                await fetch(
+                    "/api/cancel-job",
+                    {
+                        method: "POST",
+                        credentials: "same-origin",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            job_token: jobToken
+                        })
+                    }
+                );
+
+            } catch (cancelError) {
+                console.error(cancelError);
+            }
+        }
+
+        throw error;
+
     } finally {
         busy = false;
     }
 }
 
-/* =========================================
+/* =====================================================
    CARD / PVC PDF EXPORT
-========================================= */
+===================================================== */
 
 async function exportCardPDF() {
+
     const PDF = getPDFLib();
 
     if (!files.front && !files.back) {
@@ -609,20 +877,31 @@ async function exportCardPDF() {
     const pageWidth = 595.28;
     const pageHeight = 841.89;
 
-    const page = pdf.addPage([pageWidth, pageHeight]);
+    const cardWidth = isPVC ? 277.8 : 425.2;
+    const cardHeight = isPVC ? 153.1 : 283.46;
 
-    const width = isPVC ? 277.8 : 425.2;
-    const height = isPVC ? 153.1 : 283.46;
+    const page = pdf.addPage([
+        pageWidth,
+        pageHeight
+    ]);
 
     async function addCard(canvas, y) {
-        const blob = await canvasBlob(canvas);
-        const png = await pdf.embedPng(await blob.arrayBuffer());
 
-        page.drawImage(png, {
-            x: (pageWidth - width) / 2,
-            y,
-            width,
-            height
+        const blob = await canvasBlob(canvas);
+
+        const embedded = await pdf.embedPng(
+            await blob.arrayBuffer()
+        );
+
+        page.drawImage(embedded, {
+
+            x: (pageWidth - cardWidth) / 2,
+
+            y: y,
+
+            width: cardWidth,
+
+            height: cardHeight
         });
     }
 
@@ -636,9 +915,10 @@ async function exportCardPDF() {
 
     const bytes = await pdf.save();
 
-    const blob = new Blob([bytes], {
-        type: "application/pdf"
-    });
+    const blob = new Blob(
+        [bytes],
+        { type: "application/pdf" }
+    );
 
     await paidExport(
         blob,
@@ -646,12 +926,14 @@ async function exportCardPDF() {
     );
 }
 
-/* =========================================
+/* =====================================================
    IMAGE EXPORT
-========================================= */
+===================================================== */
 
 async function exportImage() {
+
     try {
+
         if (busy) return;
 
         if (isPDF) {
@@ -664,11 +946,17 @@ async function exportImage() {
             return;
         }
 
-        if (isSheet && files.images.length === 0) {
+        if (
+            isSheet &&
+            !files.images.length
+        ) {
             throw new Error("पहले Photos Upload करें।");
         }
 
-        if (!isSheet && !files.front) {
+        if (
+            !isSheet &&
+            !files.front
+        ) {
             throw new Error("पहले Photo Upload करें।");
         }
 
@@ -676,8 +964,13 @@ async function exportImage() {
 
         let filename = "photo-print.png";
 
-        if (isSheet) filename = "4x6-photo-sheet.png";
-        if (isPassport) filename = "passport-photo.png";
+        if (isSheet) {
+            filename = "4x6-photo-sheet.png";
+        }
+
+        if (isPassport) {
+            filename = "passport-photo.png";
+        }
 
         await paidExport(blob, filename);
 
@@ -686,15 +979,18 @@ async function exportImage() {
     }
 }
 
-/* =========================================
+/* =====================================================
    PDF MERGE
-========================================= */
+===================================================== */
 
 async function mergePDF() {
+
     const PDF = getPDFLib();
+
     const merged = await PDF.PDFDocument.create();
 
     for (const file of files.pdfFiles) {
+
         const doc = await PDF.PDFDocument.load(
             await file.arrayBuffer()
         );
@@ -704,17 +1000,20 @@ async function mergePDF() {
             doc.getPageIndices()
         );
 
-        pages.forEach(page => merged.addPage(page));
+        pages.forEach(page => {
+            merged.addPage(page);
+        });
     }
 
     return merged.save();
 }
 
-/* =========================================
+/* =====================================================
    PDF SPLIT
-========================================= */
+===================================================== */
 
 async function splitPDF(pdf) {
+
     const PDF = getPDFLib();
 
     const start = Number($("startPage").value);
@@ -727,7 +1026,7 @@ async function splitPDF(pdf) {
         end < start ||
         end > pdf.getPageCount()
     ) {
-        throw new Error("Page Range गलत है।");
+        throw new Error("Page Range सही भरें।");
     }
 
     const result = await PDF.PDFDocument.create();
@@ -737,31 +1036,37 @@ async function splitPDF(pdf) {
         (_, i) => start - 1 + i
     );
 
-    const pages = await result.copyPages(pdf, indexes);
+    const pages = await result.copyPages(
+        pdf,
+        indexes
+    );
 
-    pages.forEach(page => result.addPage(page));
+    pages.forEach(page => {
+        result.addPage(page);
+    });
 
     return result.save();
 }
 
-/* =========================================
+/* =====================================================
    PDF ROTATE
-========================================= */
+===================================================== */
 
 async function rotatePDF(pdf) {
+
     const PDF = getPDFLib();
 
-    const number = Number($("pdfPage").value);
+    const pageNo = Number($("pdfPage").value);
 
     if (
-        !Number.isInteger(number) ||
-        number < 1 ||
-        number > pdf.getPageCount()
+        !Number.isInteger(pageNo) ||
+        pageNo < 1 ||
+        pageNo > pdf.getPageCount()
     ) {
-        throw new Error("Page Number गलत है।");
+        throw new Error("Page Number सही भरें।");
     }
 
-    const page = pdf.getPages()[number - 1];
+    const page = pdf.getPages()[pageNo - 1];
 
     page.setRotation(
         PDF.degrees(
@@ -772,41 +1077,48 @@ async function rotatePDF(pdf) {
     return pdf.save();
 }
 
-/* =========================================
+/* =====================================================
    PDF COMPRESS
-========================================= */
+===================================================== */
 
 async function compressPDF(pdf) {
+
     return pdf.save({
         useObjectStreams: true
     });
 }
 
-/* =========================================
+/* =====================================================
    PDF PRINT
-========================================= */
+===================================================== */
 
 async function printPDFPaid() {
-    const blob = new Blob([files.pdfBytes], {
-        type: "application/pdf"
-    });
 
-    await paidExport(blob, "print-document.pdf");
+    const blob = new Blob(
+        [files.pdfBytes],
+        { type: "application/pdf" }
+    );
+
+    await paidExport(
+        blob,
+        "print-document.pdf"
+    );
 }
 
-/* =========================================
+/* =====================================================
    PDF PROCESS
-========================================= */
+===================================================== */
 
 async function processPDF() {
+
     if (busy) return;
 
     if (!files.pdfBytes) {
-        showError(new Error("पहले PDF Upload करें।"));
-        return;
+        throw new Error("पहले PDF Upload करें।");
     }
 
     try {
+
         message("PDF Processing हो रही है...");
 
         const PDF = getPDFLib();
@@ -815,42 +1127,61 @@ async function processPDF() {
         let filename;
 
         if (SERVICE === "pdf-merge") {
+
             output = await mergePDF();
+
             filename = "merged-document.pdf";
 
         } else {
+
             const pdf = await PDF.PDFDocument.load(
                 files.pdfBytes.slice(0)
             );
 
             switch (SERVICE) {
+
                 case "pdf-split":
+
                     output = await splitPDF(pdf);
+
                     filename = "split-document.pdf";
+
                     break;
 
                 case "pdf-rotate":
+
                     output = await rotatePDF(pdf);
+
                     filename = "rotated-document.pdf";
+
                     break;
 
                 case "pdf-compress":
+
                     output = await compressPDF(pdf);
+
                     filename = "compressed-document.pdf";
+
                     break;
 
                 case "pdf-print":
+
                     await printPDFPaid();
+
                     return;
 
                 default:
-                    throw new Error("PDF Service उपलब्ध नहीं है।");
+
+                    throw new Error(
+                        "PDF Service उपलब्ध नहीं है।"
+                    );
             }
         }
 
-        const blob = new Blob([output], {
-            type: "application/pdf"
-        });
+        const blob = new Blob(
+            [output],
+            { type: "application/pdf" }
+        );
 
         await paidExport(blob, filename);
 
@@ -859,9 +1190,9 @@ async function processPDF() {
     }
 }
 
-/* =========================================
-   PRINT PAID
-========================================= */
+/* =====================================================
+   PRINT BUTTON
+===================================================== */
 
 async function printPaid() {
     await exportImage();
@@ -871,38 +1202,51 @@ async function printEditor() {
     await exportImage();
 }
 
-/* =========================================
+/* =====================================================
    PREVIEW DOWNLOAD
-========================================= */
+===================================================== */
 
 function downloadPreview() {
-    alert("Preview मुफ्त है। Download के लिए Export इस्तेमाल करें।");
+
+    alert(
+        "Preview मुफ्त है। Download के लिए Export इस्तेमाल करें।"
+    );
 }
 
-/* =========================================
+/* =====================================================
    GLOBAL FUNCTIONS
-========================================= */
+===================================================== */
 
 window.resetEditor = resetEditor;
+
 window.rotateLeft = rotateLeft;
+
 window.rotateRight = rotateRight;
+
 window.exportImage = exportImage;
+
 window.processPDF = processPDF;
+
 window.printEditor = printEditor;
+
 window.printPaid = printPaid;
+
 window.downloadPreview = downloadPreview;
 
-/* =========================================
-   START EDITOR
-========================================= */
+/* =====================================================
+   INITIALIZE
+===================================================== */
 
 createDynamicControls();
 
 drawAll();
 
 message(
-    "Shree Karni Auto Print Ready | " +
-    (SERVICE || "Service ID Missing")
+    "Shree Karni Auto Print Ready | Service: " +
+    (SERVICE || "Not Detected")
 );
 
-console.log("Shree Karni Editor:", SERVICE);
+console.log(
+    "Shree Karni Auto Print V3 Loaded:",
+    SERVICE
+);
