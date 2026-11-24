@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>
+    Shree Karni Computer & E-Mitra Seva Kendra
+</title>
+
+
+<style>
+
+/* =====================================================
+   GLOBAL
+===================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+
+    margin: 0;
+
+    padding: 25px;
+
+    font-family:
+        Arial,
+        "Noto Sans Devanagari",
+        sans-serif;
+
+    background:
+        radial-gradient(
+            circle at top left,
+            #dbeafe,
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at bottom right,
+            #ede9fe,
+            transparent 35%
+        ),
+        #eef2ff;
+
+    color: #222;
+}
+
+
+/* =====================================================
+   MAIN CONTAINER
+===================================================== */
+
+.container {
+
+    max-width: 1100px;
+
+    margin: auto;
+
+    padding: 28px;
+
+    background: rgba(255,255,255,0.94);
+
+    border-radius: 22px;
+
+    box-shadow:
+        0 20px 60px rgba(30,64,175,.15),
+        0 5px 20px rgba(0,0,0,.08);
+
+    backdrop-filter: blur(10px);
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.header {
+
+    position: relative;
+
+    overflow: hidden;
+
+    text-align: center;
+
+    padding: 30px 20px;
+
+    border-radius: 18px;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0d47a1,
+            #1976d2,
+            #6a1b9a,
+            #00897b
+        );
+
+    background-size: 300% 300%;
+
+    animation:
+        gradientMove 8s ease infinite;
+
+    box-shadow:
+        0 10px 35px rgba(25,118,210,.35);
+}
+
+
+/* HEADER LIGHT */
+
+.header::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+
+    height: 180px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,.18);
+
+    top: -80px;
+
+    left: -50px;
+
+    filter: blur(5px);
+
+    animation:
+        lightMove 5s infinite alternate;
+}
+
+
+.header::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 160px;
+
+    height: 160px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,.12);
+
+    right: -40px;
+
+    bottom: -80px;
+
+    filter: blur(4px);
+
+    animation:
+        lightMove2 6s infinite alternate;
+}
+
+
+/* HEADER TEXT */
+
+.header h1 {
+
+    position: relative;
+
+    z-index: 2;
+
+    margin: 0;
+
+    font-size: 32px;
+
+    font-weight: 900;
+
+    letter-spacing: .5px;
+
+    text-shadow:
+        0 3px 10px rgba(0,0,0,.25);
+}
+
+
+.header .location {
+
+    position: relative;
+
+    z-index: 2;
+
+    margin-top: 8px;
+
+    font-size: 19px;
+
+    font-weight: bold;
+}
+
+
+.header .phone {
+
+    position: relative;
+
+    z-index: 2;
+
+    display: inline-block;
+
+    margin-top: 12px;
+
+    padding: 8px 18px;
+
+    border-radius: 30px;
+
+    background:
+        rgba(255,255,255,.18);
+
+    border:
+        1px solid rgba(255,255,255,.35);
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    backdrop-filter: blur(5px);
+}
+
+
+/* =====================================================
+   ANIMATIONS
+===================================================== */
+
+@keyframes gradientMove {
+
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+
+@keyframes lightMove {
+
+    from {
+        transform: translate(0,0);
+    }
+
+    to {
+        transform: translate(160px,80px);
+    }
+}
+
+
+@keyframes lightMove2 {
+
+    from {
+        transform: translate(0,0);
+    }
+
+    to {
+        transform: translate(-120px,-70px);
+    }
+}
+
+
+/* =====================================================
+   MAIN TITLE
+===================================================== */
+
+.main-title {
+
+    text-align: center;
+
+    margin: 30px 0 25px;
+
+    font-size: 27px;
+
+    font-weight: 900;
+
+    color: #172554;
+
+    position: relative;
+}
+
+
+.main-title::after {
+
+    content: "";
+
+    display: block;
+
+    width: 80px;
+
+    height: 4px;
+
+    margin: 10px auto 0;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #1976d2,
+            #9c27b0,
+            #00a884
+        );
+
+    animation:
+        titleGlow 2s infinite alternate;
+}
+
+
+@keyframes titleGlow {
+
+    from {
+        box-shadow:
+            0 0 3px #1976d2;
+    }
+
+    to {
+        box-shadow:
+            0 0 15px #1976d2,
+            0 0 25px #9c27b0;
+    }
+}
+
+
+/* =====================================================
+   CONTROLS
+===================================================== */
+
+.controls {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 15px;
+
+    margin-bottom: 40px;
+}
+
+
+.upload-box {
+
+    padding: 14px 16px;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #f8fafc,
+            #eef2ff
+        );
+
+    border:
+        1px solid #dbeafe;
+
+    box-shadow:
+        0 5px 15px rgba(30,64,175,.08);
+
+    transition: .3s;
+}
+
+
+.upload-box:hover {
+
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 10px 25px
+        rgba(30,64,175,.15);
+}
+
+
+.upload-box label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-weight: bold;
+
+    color: #1e3a8a;
+}
+
+
+input[type="file"] {
+
+    max-width: 250px;
+
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+button {
+
+    position: relative;
+
+    overflow: hidden;
+
+    border: none;
+
+    padding: 13px 23px;
+
+    border-radius: 10px;
+
+    color: white;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: .3s;
+
+    box-shadow:
+        0 7px 18px rgba(0,0,0,.15);
+}
+
+
+button::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: -100%;
+
+    width: 60%;
+
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.45),
+            transparent
+        );
+
+    transform:
+        skewX(-25deg);
+
+    transition: .5s;
+}
+
+
+button:hover::before {
+
+    left: 140%;
+}
+
+
+button:hover {
+
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,.22);
+}
+
+
+.print-btn {
+
+    background:
+        linear-gradient(
+            135deg,
+            #059669,
+            #10b981,
+            #047857
+        );
+
+    box-shadow:
+        0 8px 25px
+        rgba(5,150,105,.30);
+}
+
+
+.clear-btn {
+
+    background:
+        linear-gradient(
+            135deg,
+            #dc2626,
+            #ef4444,
+            #b91c1c
+        );
+
+    box-shadow:
+        0 8px 25px
+        rgba(220,38,38,.25);
+}
+
+
+/* =====================================================
+   CARD AREA
+===================================================== */
+
+.card-area {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 25mm;
+}
+
+
+/* =====================================================
+   CARD
+===================================================== */
+
+.card-box {
+
+    width: 150mm;
+
+    height: 100mm;
+
+    position: relative;
+
+    overflow: hidden;
+
+    background: white;
+
+    border-radius: 5px;
+
+    border:
+        2px solid #64748b;
+
+    box-shadow:
+        0 12px 35px
+        rgba(15,23,42,.20),
+
+        0 0 0 5px
+        rgba(59,130,246,.05);
+
+    transition: .35s;
+}
+
+
+.card-box:hover {
+
+    transform:
+        scale(1.015);
+
+    box-shadow:
+        0 18px 45px
+        rgba(15,23,42,.25),
+
+        0 0 25px
+        rgba(59,130,246,.15);
+}
+
+
+/* =====================================================
+   CARD IMAGE
+===================================================== */
+
+.card-box img {
+
+    width: 100%;
+
+    height: 100%;
+
+    display: block;
+
+    object-fit: contain;
+
+    object-position: center center;
+
+    background: white;
+}
+
+
+/* =====================================================
+   EMPTY CARD
+===================================================== */
+
+.empty-text {
+
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #94a3b8;
+
+    font-size: 21px;
+
+    font-weight: bold;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(239,246,255,.7),
+            rgba(248,250,252,.7)
+        );
+
+    pointer-events: none;
+}
+
+
+/* =====================================================
+   SERVICES
+===================================================== */
+
+.services {
+
+    margin-top: 45px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 22px;
+}
+
+
+.service-box {
+
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 23px 18px;
+
+    text-align: center;
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f8fafc
+        );
+
+    border:
+        1px solid #dbeafe;
+
+    box-shadow:
+        0 8px 25px
+        rgba(30,64,175,.10);
+
+    transition: .35s;
+}
+
+
+/* SERVICE TOP LIGHT */
+
+.service-box::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    width: 100%;
+
+    height: 4px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #1976d2,
+            #9c27b0,
+            #00a884,
+            #f59e0b
+        );
+
+    background-size: 300%;
+
+    animation:
+        gradientMove 5s infinite;
+}
+
+
+.service-box:hover {
+
+    transform:
+        translateY(-7px);
+
+    box-shadow:
+        0 15px 35px
+        rgba(30,64,175,.18),
+
+        0 0 25px
+        rgba(59,130,246,.10);
+}
+
+
+.service-box h2 {
+
+    margin:
+        0 0 15px;
+
+    font-size: 23px;
+
+    font-weight: 900;
+
+    background:
+        linear-gradient(
+            90deg,
+            #0d47a1,
+            #7b1fa2
+        );
+
+    -webkit-background-clip: text;
+
+    -webkit-text-fill-color: transparent;
+}
+
+
+.service-box p {
+
+    margin: 8px 0;
+
+    padding: 7px;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    color: #334155;
+
+    border-radius: 7px;
+
+    transition: .25s;
+}
+
+
+.service-box p:hover {
+
+    background: #eff6ff;
+
+    color: #0d47a1;
+
+    transform:
+        scale(1.03);
+}
+
+
+/* =====================================================
+   FOOTER / TAG
+===================================================== */
+
+.footer {
+
+    margin-top: 35px;
+
+    padding: 18px;
+
+    text-align: center;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0d47a1,
+            #7b1fa2,
+            #00897b
+        );
+
+    background-size: 250% 250%;
+
+    animation:
+        gradientMove 7s ease infinite;
+
+    color: white;
+
+    box-shadow:
+        0 8px 25px
+        rgba(30,64,175,.20);
+}
+
+
+.footer-tag {
+
+    font-size: 20px;
+
+    font-weight: 900;
+
+    letter-spacing: .5px;
+
+    text-shadow:
+        0 2px 8px
+        rgba(0,0,0,.25);
+}
+
+
+.footer-location {
+
+    margin-top: 6px;
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+    opacity: .95;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 700px) {
+
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        padding: 15px;
+    }
+
+    .header h1 {
+        font-size: 23px;
+    }
+
+    .header .location {
+        font-size: 16px;
+    }
+
+    .services {
+        grid-template-columns: 1fr;
+    }
+
+    .card-box {
+
+        width: 100%;
+
+        height: auto;
+
+        aspect-ratio:
+            1.5 / 1;
+    }
+
+}
+
+
+/* =====================================================
+   PRINT SETTINGS
+===================================================== */
+
+@media print {
+
+    @page {
+
+        size: A4 portrait;
+
+        margin: 0;
+    }
+
+
+    html,
+    body {
+
+        width: 210mm;
+
+        height: 297mm;
+
+        margin: 0;
+
+        padding: 0;
+
+        background: white;
+    }
+
+
+    .container {
+
+        width: 210mm;
+
+        height: 297mm;
+
+        max-width: none;
+
+        margin: 0;
+
+        padding:
+            8mm 0 0;
+
+        background: white;
+
+        box-shadow: none;
+
+        border-radius: 0;
+    }
+
+
+    /* =============================================
+       WEBSITE ELEMENTS HIDE
+    ============================================= */
+
+    .header,
+    .main-title,
+    .controls,
+    .services {
+
+        display: none !important;
+    }
+
+
+    /* =============================================
+       CARD AREA
+    ============================================= */
+
+    .card-area {
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: center;
+
+        gap: 25mm;
+
+        margin: 0;
+
+        padding: 0;
+    }
+
+
+    /* =============================================
+       PRINT CARD
+    ============================================= */
+
+    .card-box {
+
+        width: 150mm !important;
+
+        height: 100mm !important;
+
+        min-width: 150mm !important;
+
+        min-height: 100mm !important;
+
+        max-width: 150mm !important;
+
+        max-height: 100mm !important;
+
+        border-radius: 0;
+
+        border:
+            1px solid #777;
+
+        box-shadow: none;
+
+        overflow: hidden;
+
+        page-break-inside: avoid;
+
+        break-inside: avoid;
+    }
+
+
+    .card-box img {
+
+        width: 100% !important;
+
+        height: 100% !important;
+
+        object-fit: contain !important;
+
+        object-position: center center !important;
+    }
+
+
+    .empty-text {
+
+        display: none !important;
+    }
+
+
+    /* =============================================
+       PRINT FOOTER TAG
+    ============================================= */
+
+    .footer {
+
+        display: block !important;
+
+        position: fixed;
+
+        left: 0;
+
+        bottom: 4mm;
+
+        width: 210mm;
+
+        margin: 0;
+
+        padding: 2mm 0;
+
+        background: white;
+
+        color: #111;
+
+        border: none;
+
+        border-radius: 0;
+
+        box-shadow: none;
+
+        animation: none;
+
+        text-align: center;
+    }
+
+
+    .footer-tag {
+
+        font-size: 10pt;
+
+        font-weight: bold;
+
+        color: #111;
+
+        text-shadow: none;
+    }
+
+
+    .footer-location {
+
+        margin-top: 1mm;
+
+        font-size: 8pt;
+
+        color: #444;
+    }
+
+}
+
+
+/* =====================================================
+   END
+===================================================== */
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<div class="header">
+
+    <h1>
+        SHREE KARNI COMPUTER &amp; EMITRA SEVA KENDRA
+    </h1>
+
+    <div class="location">
+        PG COLLEGE के सामने, आटा चक्की के पीछे शॉप न.2 - प्रतापगढ़ (राज.)
+    </div>
+
+    <div class="phone">
+        📞 7891411425, 8852820425
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     TITLE
+===================================================== -->
+
+<div class="main-title">
+    CARD PRINT
+</div>
+
+
+<!-- =====================================================
+     UPLOAD CONTROLS
+===================================================== -->
+
+<div class="controls">
+
+
+    <!-- FRONT -->
+
+    <div class="upload-box">
+
+        <label>
+            📄 FRONT CARD
+        </label>
+
+        <input
+            type="file"
+            id="frontFile"
+            accept="image/*"
+        >
+
+    </div>
+
+
+    <!-- BACK -->
+
+    <div class="upload-box">
+
+        <label>
+            📄 BACK CARD
+        </label>
+
+        <input
+            type="file"
+            id="backFile"
+            accept="image/*"
+        >
+
+    </div>
+
+
+    <!-- PRINT BUTTON -->
+
+    <button
+        class="print-btn"
+        onclick="printCard()">
+
+        🖨 PRINT A4
+
+    </button>
+
+
+    <!-- CLEAR BUTTON -->
+
+    <button
+        class="clear-btn"
+        onclick="clearAll()">
+
+        ✕ CLEAR
+
+    </button>
+
+
+</div>
+
+
+<!-- =====================================================
+     FRONT + BACK
+===================================================== -->
+
+<div class="card-area">
+
+
+    <!-- FRONT CARD -->
+
+    <div class="card-box">
+
+        <img
+            id="frontImage"
+            alt="Front Card"
+        >
+
+        <div
+            id="frontEmpty"
+            class="empty-text">
+
+            FRONT CARD
+
+        </div>
+
+    </div>
+
+
+    <!-- BACK CARD -->
+
+    <div class="card-box">
+
+        <img
+            id="backImage"
+            alt="Back Card"
+        >
+
+        <div
+            id="backEmpty"
+            class="empty-text">
+
+            BACK CARD
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<!-- =====================================================
+     SERVICES
+===================================================== -->
+
+<div class="services">
+
+
+    <!-- COMPUTER -->
+
+    <div class="service-box">
+
+        <h2>
+            💻 COMPUTER
+        </h2>
+
+        <p>
+            RSCIT
+        </p>
+
+        <p>
+            TALLY
+        </p>
+
+        <p>
+            PGDCA
+        </p>
+
+    </div>
+
+
+    <!-- EMITRA -->
+
+    <div class="service-box">
+
+        <h2>
+            🏛 EMITRA
+        </h2>
+
+        <p>
+            EMITRA SERVICE
+        </p>
+
+        <p>
+            MITRA SERVICE
+        </p>
+
+    </div>
+
+
+    <!-- COLLEGE -->
+
+    <div class="service-box">
+
+        <h2>
+            🎓 COLLEGE
+        </h2>
+
+        <p>
+            COLLEGE ADMISSION
+        </p>
+
+        <p>
+            FEES
+        </p>
+
+        <p>
+            EXAM FORM
+        </p>
+
+        <p>
+            REVALUATION
+        </p>
+
+        <p>
+            MIGRATION APPLY
+        </p>
+
+    </div>
+
+
+    <!-- IGNOU AND VMOU -->
+
+    <div class="service-box">
+
+        <h2>
+            📚 IGNOU AND VMOU
+        </h2>
+
+        <p>
+            DECE
+        </p>
+
+        <p>
+            B.LIB
+        </p>
+
+        <p>
+            D.LIB
+        </p>
+
+        <p>
+            YOGA
+        </p>
+
+    </div>
+
+
+</div>
+
+
+<!-- =====================================================
+     FOOTER TAG
+===================================================== -->
+
+<div class="footer">
+
+    <div class="footer-tag">
+
+        SHREE KARNI COMPUTER &amp; EMITRA SEVA KENDRA
+
+    </div>
+
+    <div class="footer-location">
+
+        PG COLLEGE के सामने, आटा चक्की के पीछे शॉप न.2, प्रतापगढ़ (राज.) 
+        &nbsp; | &nbsp;
+        📞 7891411425, 8852820425
+
+    </div>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   GET ELEMENTS
+===================================================== */
+
+const frontFile =
+    document.getElementById("frontFile");
+
+const backFile =
+    document.getElementById("backFile");
+
+const frontImage =
+    document.getElementById("frontImage");
+
+const backImage =
+    document.getElementById("backImage");
+
+const frontEmpty =
+    document.getElementById("frontEmpty");
+
+const backEmpty =
+    document.getElementById("backEmpty");
+
+
+/* =====================================================
+   FRONT IMAGE
+===================================================== */
+
+frontFile.addEventListener(
+    "change",
+    function () {
+
+        const file =
+            this.files[0];
+
+        if (!file) {
+            return;
+        }
+
+
+        if (
+            !file.type.startsWith("image/")
+        ) {
+
+            alert(
+                "कृपया JPG, JPEG, PNG या image file चुनें।"
+            );
+
+            this.value = "";
+
+            return;
+        }
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function (event) {
+
+                frontImage.src =
+                    event.target.result;
+
+                frontEmpty.style.display =
+                    "none";
+
+            };
+
+
+        reader.readAsDataURL(file);
+
+    }
+);
+
+
+/* =====================================================
+   BACK IMAGE
+===================================================== */
+
+backFile.addEventListener(
+    "change",
+    function () {
+
+        const file =
+            this.files[0];
+
+        if (!file) {
+            return;
+        }
+
+
+        if (
+            !file.type.startsWith("image/")
+        ) {
+
+            alert(
+                "कृपया JPG, JPEG, PNG या image file चुनें।"
+            );
+
+            this.value = "";
+
+            return;
+        }
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function (event) {
+
+                backImage.src =
+                    event.target.result;
+
+                backEmpty.style.display =
+                    "none";
+
+            };
+
+
+        reader.readAsDataURL(file);
+
+    }
+);
+
+
+/* =====================================================
+   PRINT
+===================================================== */
+
+function printCard() {
+
+    if (
+        !frontImage.src &&
+        !backImage.src
+    ) {
+
+        alert(
+            "पहले Front या Back Card की image चुनें।"
+        );
+
+        return;
+    }
+
+
+    window.print();
+
+}
+
+
+/* =====================================================
+   CLEAR
+===================================================== */
+
+function clearAll() {
+
+    frontImage.removeAttribute("src");
+
+    backImage.removeAttribute("src");
+
+
+    frontFile.value = "";
+
+    backFile.value = "";
+
+
+    frontEmpty.style.display =
+        "flex";
+
+    backEmpty.style.display =
+        "flex";
+
+}
+
+</script>
+
+
+</body>
+</html>
