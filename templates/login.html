@@ -1,1 +1,3 @@
-
+{% extends "base.html" %}{% block content %}<section class="panel narrow"><h1>Partner / Admin Login</h1><form method="post">
+<label>Login ID</label><input name="username" required autocomplete="username"><label>Password</label><input type="password" name="password" required autocomplete="current-password">
+<button>Login</button></form><p class="muted">Partner और Admin को अलग-अलग अधिकार दिए गए हैं।</p></section>{% endblock %}
