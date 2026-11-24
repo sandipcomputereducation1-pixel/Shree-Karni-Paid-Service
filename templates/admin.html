@@ -1,5 +1,140 @@
-{% extends "base.html" %}{% block content %}<h1>Admin Dashboard</h1><div class="stats"><div class="stat"><small>Total Partners</small><strong>{{partners|length}}</strong></div><div class="stat"><small>Service Revenue</small><strong>₹{{'%.2f'|format(total_earned)}}</strong></div><div class="stat"><small>Charge / Service</small><strong>₹1</strong></div></div>
-<section class="panel"><h2>Create Partner</h2><form method="post" action="{{url_for('create_partner')}}" class="inline"><input name="name" placeholder="Partner Name" required><input name="username" placeholder="Login ID" required><input name="password" type="password" placeholder="Password (min 8 chars)" minlength="8" required><button>Create Partner</button></form></section>
-<section class="panel"><h2>Recharge Requests</h2><div class="tablewrap"><table><tr><th>Partner</th><th>Amount</th><th>UPI Reference</th><th>Action</th></tr>{% for r in pending %}<tr><td>{{r.name}} ({{r.username}})</td><td>₹{{'%.2f'|format(r.amount)}}</td><td>{{r.reference}}</td><td><form class="inline" method="post" action="{{url_for('decide_recharge',req_id=r.id,action='approve')}}"><button>Approve</button></form><form class="inline" method="post" action="{{url_for('decide_recharge',req_id=r.id,action='reject')}}"><button class="danger">Reject</button></form></td></tr>{% else %}<tr><td colspan="4">कोई Pending Request नहीं।</td></tr>{% endfor %}</table></div></section>
-<section class="panel"><h2>Partners & Wallet</h2><div class="tablewrap"><table><tr><th>Name</th><th>Login ID</th><th>Wallet</th><th>Status</th><th>Add Wallet</th><th>Account</th></tr>{% for p in partners %}<tr><td>{{p.name}}</td><td>{{p.username}}</td><td>₹{{'%.2f'|format(p.wallet)}}</td><td>{{'Active' if p.active else 'Disabled'}}</td><td><form class="inline" method="post" action="{{url_for('adjust_wallet',user_id=p.id)}}"><input type="number" name="amount" min="1" step="1" placeholder="₹" required><input name="note" placeholder="Note"><button>Add</button></form></td><td><form method="post" action="{{url_for('toggle_partner',user_id=p.id)}}"><button class="secondary">{{'Disable' if p.active else 'Enable'}}</button></form></td></tr>{% endfor %}</table></div></section>
-<section class="panel"><h2>Latest Transactions</h2><div class="tablewrap"><table><tr><th>Date</th><th>Partner</th><th>Type</th><th>Amount</th><th>Details</th></tr>{% for t in transactions %}<tr><td>{{t.created_at}}</td><td>{{t.username}}</td><td>{{t.kind}}</td><td>₹{{'%.2f'|format(t.amount)}}</td><td>{{t.note}}</td></tr>{% endfor %}</table></div></section>{% endblock %}
+
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Admin Dashboard</h1>
+
+<div class="stats">
+    <div class="stat">
+        <small>Total Service Earnings</small>
+        <strong>₹{{ '%.2f'|format(total_earned) }}</strong>
+    </div>
+    <div class="stat">
+        <small>Total Partners</small>
+        <strong>{{ partners|length }}</strong>
+    </div>
+</div>
+
+<section class="panel">
+    <h2>Create New Partner</h2>
+    <form method="POST" action="{{ url_for('create_partner') }}">
+        <label>Partner Name</label>
+        <input name="name" required>
+
+        <label>Login ID</label>
+        <input name="username" required>
+
+        <label>Password (Minimum 8 Characters)</label>
+        <input name="password" type="password" minlength="8" required>
+
+        <button type="submit">Create Partner</button>
+    </form>
+</section>
+
+<section class="panel">
+    <h2>Partner Management</h2>
+    <div class="tablewrap">
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Login ID</th>
+                <th>Wallet</th>
+                <th>Status</th>
+                <th>Wallet Add</th>
+                <th>Action</th>
+            </tr>
+
+            {% for p in partners %}
+            <tr>
+                <td>{{ p.name }}</td>
+                <td>{{ p.username }}</td>
+                <td>₹{{ '%.2f'|format(p.wallet) }}</td>
+                <td>{{ 'Active' if p.active else 'Inactive' }}</td>
+                <td>
+                    <form method="POST"
+                          action="{{ url_for('adjust_wallet',user_id=p.id) }}">
+                        <input type="number" name="amount"
+                               min="0.01" step="0.01"
+                               placeholder="Amount" required>
+                        <input name="note" placeholder="Recharge note">
+                        <button type="submit">Add</button>
+                    </form>
+                </td>
+                <td>
+                    <form method="POST"
+                          action="{{ url_for('toggle_partner',user_id=p.id) }}">
+                        <button type="submit">
+                            {{ 'Deactivate' if p.active else 'Activate' }}
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</section>
+
+<section class="panel">
+    <h2>Pending Recharge Requests</h2>
+
+    <div class="tablewrap">
+        <table>
+            <tr>
+                <th>Partner</th>
+                <th>Amount</th>
+                <th>UTR / Reference</th>
+                <th>Action</th>
+            </tr>
+
+            {% for r in pending %}
+            <tr>
+                <td>{{ r.name }} ({{ r.username }})</td>
+                <td>₹{{ '%.2f'|format(r.amount) }}</td>
+                <td>{{ r.reference }}</td>
+                <td>
+                    <form method="POST"
+                          action="{{ url_for('decide_recharge',req_id=r.id,action='approve') }}">
+                        <button type="submit">Approve</button>
+                    </form>
+
+                    <form method="POST"
+                          action="{{ url_for('decide_recharge',req_id=r.id,action='reject') }}">
+                        <button type="submit">Reject</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4">कोई Pending Request नहीं।</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+</section>
+
+<section class="panel">
+    <h2>All Transactions</h2>
+    <div class="tablewrap">
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>Partner</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Details</th>
+            </tr>
+
+            {% for t in transactions %}
+            <tr>
+                <td>{{ t.created_at }}</td>
+                <td>{{ t.username }}</td>
+                <td>{{ t.kind }}</td>
+                <td>₹{{ '%.2f'|format(t.amount) }}</td>
+                <td>{{ t.note }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5">कोई Transaction नहीं।</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+</section>
+
+{% endblock %}
