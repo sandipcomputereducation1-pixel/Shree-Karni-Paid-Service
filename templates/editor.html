@@ -1,8 +1,109 @@
-{% extends "base.html" %}{% block content %}<h1>Card Print & Photo Editor</h1><p class="muted">Print action से पहले Wallet से ₹1 कटेगा। Preview और editing मुफ्त है।</p>
-<div class="editor-grid"><section class="panel"><h2>Upload Images</h2><label>Front Card</label><input type="file" id="frontFile" accept="image/*"><label>Back Card</label><input type="file" id="backFile" accept="image/*">
-<label>Rotate: <b id="angleText">0°</b></label><input id="rotate" type="range" min="0" max="360" value="0">
-<label>Zoom / Crop</label><input id="zoom" type="range" min="50" max="200" value="100">
-<div class="actions"><button type="button" onclick="resetEditor()">Reset</button><button type="button" onclick="printPaid()">Pay ₹1 & Print A4</button></div>
-<p class="muted">Auto Fit / Crop mode</p><select id="fitMode"><option value="contain">Auto Fit (पूरी image)</option><option value="cover">Auto Crop (box भरें)</option></select></section>
-<section class="panel"><h2>Print Preview</h2><div class="preview-stack"><div class="card-box"><canvas id="frontCanvas" width="1200" height="800"></canvas><span id="frontEmpty">FRONT CARD</span></div><div class="card-box"><canvas id="backCanvas" width="1200" height="800"></canvas><span id="backEmpty">BACK CARD</span></div></div></section></div>
-<script src="{{url_for('static',filename='editor.js')}}"></script>{% endblock %}
+
+{% extends "base.html" %}
+{% block content %}
+
+<h1>{{ service.name }}</h1>
+
+<p class="muted">
+    Editing और Preview मुफ्त हैं। सफल File Export पर ₹1 Wallet Charge होगा।
+</p>
+
+<div class="editor-grid">
+
+    <section class="panel no-print">
+        <h2>Upload Files</h2>
+
+        <label>Image / PDF Upload</label>
+        <input type="file" id="fileInput"
+               accept="image/*,.pdf"
+               multiple>
+
+        <div id="cardUploads">
+            <label>Front Card</label>
+            <input type="file" id="frontFile" accept="image/*">
+
+            <label>Back Card</label>
+            <input type="file" id="backFile" accept="image/*">
+        </div>
+
+        <div id="photoControls">
+            <label>Rotate: <span id="angleText">0°</span></label>
+            <input type="range" id="rotate" min="0" max="360" value="0">
+
+            <label>Zoom</label>
+            <input type="range" id="zoom" min="50" max="200" value="100">
+
+            <label>Fit Mode</label>
+            <select id="fitMode">
+                <option value="contain">Auto Fit</option>
+                <option value="cover">Auto Crop</option>
+            </select>
+        </div>
+
+        <div id="pdfControls" hidden>
+            <label>PDF Page Number (for Split / Rotate)</label>
+            <input type="number" id="pdfPage" min="1" value="1">
+
+            <label>Start Page</label>
+            <input type="number" id="startPage" min="1" value="1">
+
+            <label>End Page</label>
+            <input type="number" id="endPage" min="1" value="1">
+        </div>
+
+        <div class="actions">
+            <button type="button" onclick="resetEditor()">
+                Reset
+            </button>
+
+            <button type="button" onclick="processPDF()"
+                    id="pdfAction" hidden>
+                Process PDF
+            </button>
+
+            <button type="button" onclick="exportImage()"
+                    id="exportButton">
+                Export Image · ₹1
+            </button>
+
+            <button type="button" onclick="printEditor()"
+                    id="printButton">
+                Print A4
+            </button>
+        </div>
+
+        <p id="editorMessage" class="muted" aria-live="polite"></p>
+
+        <a class="btn" href="{{ url_for('partner') }}">
+            Back to Dashboard
+        </a>
+    </section>
+
+    <section class="panel">
+        <h2>Live Preview</h2>
+
+        <div class="preview-stack">
+            <div class="card-box" id="frontBox">
+                <canvas id="frontCanvas" width="1200" height="800"></canvas>
+                <span id="frontEmpty">IMAGE PREVIEW</span>
+            </div>
+
+            <div class="card-box" id="backBox" hidden>
+                <canvas id="backCanvas" width="1200" height="800"></canvas>
+                <span id="backEmpty">BACK CARD</span>
+            </div>
+        </div>
+
+        <p id="pdfInfo"></p>
+    </section>
+
+</div>
+
+<script>
+window.SK_SERVICE = {{ service.slug|tojson }};
+</script>
+
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="{{ url_for('static',filename='editor.js') }}"></script>
+
+{% endblock %}
